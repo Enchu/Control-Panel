@@ -48,7 +48,7 @@ const Auth = ({navigation}) => {
 
   const authHandler = async (email, password, ip) => {
     const jwt = await login(email, password, ip)
-    console.log(jwt + "123");
+    console.log("JWT: " + jwt);
 
     if(jwt != null) {
       console.log("Login successful")
@@ -56,6 +56,7 @@ const Auth = ({navigation}) => {
     }else{
       setShowErrorModal(true);
       console.log("Login unsuccessful");
+      console.log(setShowErrorModal + ' ' + showErrorModal)
     }
   }
 
@@ -109,24 +110,23 @@ const Auth = ({navigation}) => {
       });*/
   }, []);
 
-  useEffect(() => {
-    if (showErrorModal) {
-      console.log('123');
-      <ModalText iconsSource={icons.unsuccessful} placeholderSource='Ошибка подключения' visibleSource={showErrorModal}/>
-    }
-  }, [showErrorModal]);
-
   const renderSignIn = () => {
     return (
       <MotiView
         state={animationState}
         style={{marginTop: SIZES.padding, height: SIZES.height * 0.55}}
       >
+
+        {showErrorModal &&
+          (
+            <ModalText iconsSource={icons.unsuccessful} placeholderSource='Ошибка подключения' visibleSource={showErrorModal}/>
+          )
+        }
+
         <Shadow>
           <View style={styles.authContainer}>
-
-            <Text style={{width: '60%', lineHeight: 50, color: COLORS.dark, ...FONTS.h1}}>
-              Sign in to continue
+            <Text style={{width: '100%', lineHeight: 50, textAlign: 'center', justifyContent: 'center', color: COLORS.dark, ...FONTS.h1}}>
+              Подключится к панели управления
             </Text>
 
             <KeyboardAwareScrollView
@@ -168,7 +168,7 @@ const Auth = ({navigation}) => {
                   borderRadius: SIZES.radius,
                   backgroundColor: COLORS.error
                 }}
-                placeholder="Email"
+                placeholder="Логин"
                 value={email}
                 onChange={(text) => setEmail(text)}
                 prependComponent={
@@ -190,7 +190,7 @@ const Auth = ({navigation}) => {
                   borderRadius: SIZES.radius,
                   backgroundColor: COLORS.error
                 }}
-                placeholder="Password"
+                placeholder="Пароль"
                 value={password}
                 secureTextEntry={!isVisible}
                 onChange={(text) => setPassword(text)}
@@ -216,19 +216,19 @@ const Auth = ({navigation}) => {
               />
 
               {/* FORGOT */}
-              <View style={{alignItems: 'flex-end'}}>
+              {/*<View style={{alignItems: 'flex-end'}}>
                 <TextButton
                   label="Forgot Password"
                   contentContainerStyle={{marginTop: SIZES.radius, backgroundColor: null}}
                   labelStyle={{color: COLORS.support3, ...FONTS.h4}}
                 />
-              </View>
+              </View>*/}
 
             </KeyboardAwareScrollView>
 
             {/* LOG IN */}
             <TextButton
-              label="Log In"
+              label="Подключиться"
               contentContainerStyle={{
                 height: 55,
                 borderRadius: SIZES.radius,
@@ -502,7 +502,7 @@ const Auth = ({navigation}) => {
         </Text>
 
         <TextButton
-          label={mode === "signIn"? "Create a new account" : "Sign in"}
+          label={mode === "signIn" ? "Create a new account" : "Sign in"}
           contentContainerStyle={{
             marginLeft: SIZES.base,
             backgroundColor: null,
@@ -584,14 +584,14 @@ const Auth = ({navigation}) => {
   }
 
   return (
-    <View style={{ flex: 1, paddingHorizontal: SIZES.padding, backgroundColor: COLORS.lightGrey}}>
+    <View style={{ flex: 1, paddingHorizontal: SIZES.padding, backgroundColor: COLORS.dark, justifyContent: 'center', alignItems: 'center'}}>
       <View style={{zIndex: 1}}>
         {renderAuthContainer()}
       </View>
 
-      {renderAuthContainerFooter()}
+      {/*{renderAuthContainerFooter()}*/}
 
-      {mode === "signIn" && renderSocialLogins()}
+      {/*{mode === "signIn" && renderSocialLogins()}*/}
 
       {/* Country Modal */}
       {renderCountryModal()}

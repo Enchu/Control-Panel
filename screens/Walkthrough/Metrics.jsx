@@ -5,8 +5,12 @@ import { LineView, TextList } from "../../components/module";
 import { MotiView } from "moti";
 import { Shadow } from "react-native-shadow-2";
 import { RESP } from "../../hooks/userApi";
+import { useAuth } from "../../hooks/useAuth";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Metrics = () => {
+  const {ipSetup} = useAuth()
+
   //Date
   const currentDate = new Date();
   const options = {
@@ -24,7 +28,7 @@ const Metrics = () => {
   const renderPanel = async () => {
     const startTime = performance.now();
 
-    const pp = await RESP('http://10.0.2.2:5001/api/metrics/dynamic', 'GET')
+    const pp = await RESP(`http://${ipSetup}/api/metrics/dynamic`, 'GET')
 
     if(pp != null){
       const elapsedTime = performance.now() - startTime;
@@ -47,7 +51,7 @@ const Metrics = () => {
   }, []);
 
   return (
-    <View style={{backgroundColor: COLORS.dark}}>
+    <View>
 
       <View
         style={{
@@ -66,7 +70,7 @@ const Metrics = () => {
           alignItems: 'center',
         }}
       >
-        <ScrollView>
+        <KeyboardAwareScrollView>
           <Shadow>
             <View style={{
               width: SIZES.width - SIZES.base,
@@ -142,14 +146,14 @@ const Metrics = () => {
               <TextList
                 inputStyleL={{...FONTS.h3}}
                 inputStyleR={{...FONTS.h3}}
-                placeholderL='Температура CPU:'
-                placeholderR={metrics && metrics.result ? metrics.result.cpuTemperature + ' %' || '0%' : '0%'}
+                placeholderL='RAM:'
+                placeholderR={metrics && metrics.result ? metrics.result.ramUsageMb + ' %' || '0%' : '0%'}
               />
               <TextList
                 inputStyleL={{...FONTS.h3}}
                 inputStyleR={{...FONTS.h3}}
-                placeholderL='RAM:'
-                placeholderR={metrics && metrics.result ? metrics.result.ramUsageMb + ' %' || '0%' : '0%'}
+                placeholderL='Температура CPU:'
+                placeholderR={metrics && metrics.result ? metrics.result.cpuTemperature + ' %' || '0%' : '0%'}
               />
               <TextList
                 inputStyleL={{...FONTS.h3}}
@@ -197,7 +201,7 @@ const Metrics = () => {
 
             </View>
           </Shadow>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </MotiView>
 
     </View>

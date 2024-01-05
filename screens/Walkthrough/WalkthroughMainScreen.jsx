@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text } from "react-native";
 import { COLORS, FONTS, icons, SIZES } from "../../constants";
 import { MotiView, useAnimationState } from "moti";
 import { Shadow } from "react-native-shadow-2";
 import { IconText, ModalText, TextButton, TextList } from "../../components/module";
 import { RESP, RESPBODY } from "../../hooks/userApi";
 import { useAuth } from "../../hooks/useAuth";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Chart from "../../components/chart/Chart";
+import RNFS from 'react-native-fs';
 
 const WalkthroughMainScreen = () => {
   const {ipSetup, user} = useAuth()
@@ -19,10 +22,9 @@ const WalkthroughMainScreen = () => {
   const [placeholderSource, setPlaceholderSource] = useState('');
   const [iconsSource, setIconsSource] = useState();
 
+  //10.0.2.2:5001
   const renderPanel = async () => {
-    const pp = await RESP('http://10.0.2.2:5001/api/metrics/state', 'GET')
-
-    console.log(pp)
+    const pp = await RESP(`http://${ipSetup}/api/metrics/state`, 'GET')
 
     if(pp != null){
       setPanelInfo(pp)
@@ -35,7 +37,7 @@ const WalkthroughMainScreen = () => {
   //base/command/
   const performAction = async (url, errorMessage) => {
     try {
-      const pp = await RESPBODY(user, url, 'GET', 1000);
+      const pp = await RESPBODY(user, url, 'GET', 5000);
 
       setIconsSource(icons.success);
       setPlaceholderSource(pp.result);
@@ -52,49 +54,131 @@ const WalkthroughMainScreen = () => {
   //restart-core
   const actionRestartPanel = async () => {
     await performAction(
-      'http://10.0.2.2:5001/base/command/restart-core',
+      `http://${ipSetup}/base/command/restart-core`,
       'Error restarting'
     );
   };
 
   //file-get
   const actionDownloadPanel = async () => {
-    await performAction(
-      'http://10.0.2.2:5001/base/command/file-get',
-      'Error file-get'
-    );
+    try {
+      const response = await fetch(`http://${ipSetup}/base/command/file-get`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user}`
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+
+        setIconsSource(icons.unsuccessful);
+        setPlaceholderSource('Network response was not ok');
+        setVisible(true);
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.toLowerCase().includes('application/json')) {
+        const data = await response.json();
+
+        if (data.result === 'На устройстве не установлен проект') {
+          setIconsSource(icons.unsuccessful);
+          setPlaceholderSource('На устройстве не установлен проект');
+          setVisible(true);
+          console.log('На устройстве не установлен проект')
+        }
+      }else{
+        console.log('else')
+
+        const fileData = await response.blob();
+        const filePath = `${RNFS.DocumentDirectoryPath}/NameProject.zip`;
+
+        console.log('fileData:', JSON.stringify(fileData));
+        console.log('filePath: ' + filePath)
+        console.log('Document Directory Path:', RNFS.DocumentDirectoryPath);
+        //await RNFS.writeFile(filePath, fileData, 'base64');
+
+        setIconsSource(icons.success);
+        setPlaceholderSource('Успешно скачено');
+        setVisible(true);
+
+        console.log('SUSS')
+      }
+    } catch (error) {
+      console.log('Error file-get: ', error);
+      throw error;
+    }
   };
 
   //log-get
   const actionLogsPanel = async () => {
-    await performAction(
-      'http://10.0.2.2:5001/base/command/log-get',
-      'Error log-get'
-    );
+    try {
+      const response = await fetch(`http://${ipSetup}/base/command/log-get`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user}`
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+
+        setIconsSource(icons.unsuccessful);
+        setPlaceholderSource('Network response was not ok');
+        setVisible(true);
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.toLowerCase().includes('application/json')) {
+        const data = await response.json();
+
+        if (data.result === 'На устройстве нету логов') {
+          setIconsSource(icons.success);
+          setPlaceholderSource('На устройстве нету логов');
+          setVisible(true);
+          console.log('На устройстве нету логов')
+        }
+      }else{
+        console.log('actionLogsPanel else')
+
+        const fileData = await response.blob();
+        const filePath = `${RNFS.DocumentDirectoryPath}/NameProject.zip`;
+
+        console.log('fileData:', JSON.stringify(fileData));
+        console.log('filePath: ' + filePath)
+        console.log('Document Directory Path:', RNFS.DocumentDirectoryPath);
+
+        //await RNFS.writeFile(filePath, fileData, 'base64');
+
+        setIconsSource(icons.success);
+        setPlaceholderSource('Успешно скачено');
+        setVisible(true);
+
+        console.log('SUSS log-get')
+      }
+    } catch (error) {
+      console.log('Error log-get: ', error);
+      throw error;
+    }
   };
 
   //file-set
   const actionFileSetPanel = async () => {
-    await performAction(
-      'http://10.0.2.2:5001/base/command/file-set',
-      'Error file-set'
-    );
+        await performAction(
+          `http://${ipSetup}/base/command/file-set`,
+          'Error file-get'
+        );
   };
 
   //file-set
   const actionUpdatePanel = async () => {
     await performAction(
-      'http://10.0.2.2:5001/base/command/file-set',
+      `http://${ipSetup}/base/command/file-set`,
       'Error file-set'
     );
   };
-
-  const metricsPanel = async () => {
-    const pp = await RESP('http://10.0.2.2:5001/api/metrics/dynamic', 'GET')
-    if(pp!= null){
-      setMetrics(pp)
-    }
-  }
 
   const animationState = useAnimationState({
     info:{
@@ -105,12 +189,24 @@ const WalkthroughMainScreen = () => {
     }
   });
 
+  const cpuUsage = metrics && metrics.result ? (metrics.result.cpuUsagePercent / 100) : 0;
+  const ramUsage = metrics && metrics.result ? (metrics.result.ramUsageMb) / 100 : 0;
+
+  const metricsPanel = async () => {
+    const pp = await RESP(`http://${ipSetup}/api/metrics/dynamic`, 'GET')
+    if(pp!= null){
+      setMetrics(pp);
+    }
+  }
+
   useEffect(() => {
     renderPanel()
+  }, []);
 
+  useEffect(() => {
     const interval = setInterval(() => {
       metricsPanel()
-    }, 1000);
+    }, 2000);
 
     return () => {
       clearInterval(interval);
@@ -140,7 +236,7 @@ const WalkthroughMainScreen = () => {
         {/* List Data */}
         <TextList
           placeholderL='IP:'
-          placeholderR={ipSetup != null ? ipSetup : '10.0.2.2:5001'}
+          placeholderR={ipSetup}
         />
         {panelInfo && panelInfo.result && panelInfo.result.softwareVersion && (
           <TextList
@@ -179,14 +275,26 @@ const WalkthroughMainScreen = () => {
         />
 
         {/* CPU, RUM */}
-        <TextList
+
+        {/*<TextList
           placeholderL='CPU:'
           placeholderR={metrics && metrics.result ? metrics.result.cpuUsagePercent + ' %' || '0%' : '0%'}
         />
         <TextList
           placeholderL='RAM:'
           placeholderR={metrics && metrics.result ? metrics.result.ramUsageMb + ' %' || '0%' : '0%'}
+        />*/}
+
+        <Chart
+          cpuUsage={cpuUsage}
+          ramUsage={ramUsage}
+          containerStyle={{
+            height: SIZES.height * 0.45,
+            justifyContent: 'center',
+            alignItems: 'center',
+        }}
         />
+
       </View>
     )
   }
@@ -216,7 +324,7 @@ const WalkthroughMainScreen = () => {
               }}
             />
 
-            {/* Dowload */}
+            {/* Download */}
             <IconText
               containerStyle={{
                 width: 120,
@@ -248,7 +356,7 @@ const WalkthroughMainScreen = () => {
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-            {/* Получить логи */}
+            {/* Get logs */}
             <IconText
               containerStyle={{
                 width: 120,
@@ -264,7 +372,7 @@ const WalkthroughMainScreen = () => {
               }}
             />
 
-            {/* Залить */}
+            {/* Upload */}
             <IconText
               containerStyle={{
                 width: 120,
@@ -278,7 +386,7 @@ const WalkthroughMainScreen = () => {
               onPress={() => {actionFileSetPanel}}
             />
 
-            {/* Отладить */}
+            {/* Debug */}
             <IconText
               containerStyle={{
                 width: 120,
@@ -294,7 +402,7 @@ const WalkthroughMainScreen = () => {
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-            {/* Имитировать */}
+            {/* Imitate */}
             <IconText
               containerStyle={{
                 width: 120,
@@ -308,13 +416,12 @@ const WalkthroughMainScreen = () => {
               onPress={null}
             />
 
-            {/* Обновить */}
+            {/* Update */}
             <IconText
               containerStyle={{
                 width: 120,
                 height: 100,
                 borderRadius: 10,
-                backgroundColor: 'lightblue',
               }}
               icon={icons.update}
               iconStyle={{ marginBottom: 10 }}
@@ -353,11 +460,11 @@ const WalkthroughMainScreen = () => {
             ...FONTS.body5,
           }}
         >
-          {mode === "info" ? "Show" : "Hide?"}
+          {mode === "info" ? "Показать" : "Скрыть"}
         </Text>
 
         <TextButton
-          label={mode === "info" ? "Actions" : "Info"}
+          label={mode === "info" ? "Действия" : "Действия"}
           contentContainerStyle={{
             marginLeft: SIZES.base,
             backgroundColor: null,
@@ -383,7 +490,7 @@ const WalkthroughMainScreen = () => {
   }
 
   return (
-    <View style={{backgroundColor: COLORS.dark}}>
+    <View>
 
       <View
         style={{
@@ -402,7 +509,7 @@ const WalkthroughMainScreen = () => {
             alignItems: 'center',
           }}
         >
-          <ScrollView>
+          <KeyboardAwareScrollView>
             <Shadow>
             <View style={{ width: SIZES.width - SIZES.base, padding: SIZES.base, borderRadius: SIZES.radius }}>
 
@@ -415,7 +522,7 @@ const WalkthroughMainScreen = () => {
 
             </View>
           </Shadow>
-          </ScrollView>
+          </KeyboardAwareScrollView>
         </MotiView>
 
     </View>

@@ -12,22 +12,21 @@ const AuthProvider = ({children}) => {
 
   const loginHandler = async (email, password, ip) => {
     setIsIsLoading(true);
-    console.log(ip)
 
-    if(ip != null){
+    if(ip){
       setIpSetup(ip);
-      console.log(ipSetup)
-    }else{
-      setIpSetup('10.0.2.2:5001')
-      console.log(ipSetup)
     }
+    /*else{
+      setIpSetup('10.0.2.2:5001')
+    }*/
+    console.log(email)
+    console.log(password)
 
-    if(email != null && password != null){
-
+    if(email.trim() !== '' && password.trim() !== ''){
       const timeoutPromise = new Promise((resolve, reject) => {
         setTimeout(() => {
           reject(new Error('Request timeout'));
-        }, 2000);
+        }, 5000);
       });
 
       try {
@@ -58,6 +57,8 @@ const AuthProvider = ({children}) => {
       }finally {
         setIsIsLoading(false);
       }
+    }else{
+      return null;
     }
   }
 
@@ -86,7 +87,7 @@ const AuthProvider = ({children}) => {
   }
 
   const value = useMemo(() => ({
-    user, login: loginHandler, logout: logOutHandler, register: registerHandler(), isLoadingInitial, isLoading
+    user, login: loginHandler, logout: logOutHandler, register: registerHandler(), isLoadingInitial, isLoading, ipSetup
   }), [user, isLoading]);
 
   useEffect(() => {

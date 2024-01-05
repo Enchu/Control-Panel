@@ -23,7 +23,7 @@ const WalkthroughMainScreen = () => {
   }, []);
 
   return (
-    <View style={{backgroundColor: COLORS.dark}}>
+    <View>
 
       <View
         style={{

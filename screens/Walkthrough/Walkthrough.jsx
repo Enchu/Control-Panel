@@ -78,7 +78,7 @@ const Walkthrough = ({navigation}) => {
     <View
       style={{
         flex: 1,
-        backgroundColor: COLORS.lightGrey,
+        backgroundColor: COLORS.dark,
       }}
     >
       <Animated.FlatList
