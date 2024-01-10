@@ -1,13 +1,23 @@
 import React, { useEffect, useState} from 'react';
-import {StyleSheet, View, Text, Image, Modal, FlatList, TouchableOpacity, TouchableWithoutFeedback} from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  Modal,
+  FlatList,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Alert,
+} from "react-native";
 import {COLORS, FONTS, SIZES} from "../../constants";
 import {MotiView, useAnimationState} from 'moti';
 import {Shadow} from "react-native-shadow-2";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import icons from "../../constants/icons";
 import { CheckBox, CountryDropDown, FormInput, IconButton, ModalText, TextButton } from "../../components/module";
-import axios from "axios";
 import {useAuth} from "../../hooks/useAuth";
+import axios from "axios";
 
 const styles = StyleSheet.create({
   authContainer: {
@@ -15,7 +25,6 @@ const styles = StyleSheet.create({
     width: SIZES.width - (SIZES.padding * 2),
     padding: SIZES.padding,
     borderRadius: SIZES.radius,
-    backgroundColor: COLORS.light,
   },
   socialButtonContainer: {
     width: 55,
@@ -49,6 +58,7 @@ const Auth = ({navigation}) => {
   const authHandler = async (email, password, ip) => {
     const jwt = await login(email, password, ip)
     console.log("JWT: " + jwt);
+    navigation.navigate("Walkthrough")
 
     if(jwt != null) {
       console.log("Login successful")
@@ -58,6 +68,19 @@ const Auth = ({navigation}) => {
       console.log("Login unsuccessful");
       console.log(setShowErrorModal + ' ' + showErrorModal)
     }
+
+    /*await axios.get('http://192.168.31.214:5001/api/metrics/state', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      timeout: 10000
+    }).then(response => {
+      Alert.alert('response','ПРОШЛО')
+      navigation.navigate("Walkthrough")
+    }).catch(error => {
+      console.log('Error login', error.message);
+      Alert.alert('Ошибка', error.message);
+    })*/
   }
 
   const registerHandler = async (email, password) => {
@@ -66,7 +89,7 @@ const Auth = ({navigation}) => {
 
   const animationState = useAnimationState({
     signIn:{
-      height: SIZES.height * 0.55,
+      height: SIZES.height * 0.8,
     },
     signUp:{
       height: SIZES.height * 0.7,
@@ -114,7 +137,7 @@ const Auth = ({navigation}) => {
     return (
       <MotiView
         state={animationState}
-        style={{marginTop: SIZES.padding, height: SIZES.height * 0.55}}
+        style={{marginTop: SIZES.padding, height: SIZES.height}}
       >
 
         {showErrorModal &&
@@ -122,10 +145,8 @@ const Auth = ({navigation}) => {
             <ModalText iconsSource={icons.unsuccessful} placeholderSource='Ошибка подключения' visibleSource={showErrorModal}/>
           )
         }
-
-        <Shadow>
           <View style={styles.authContainer}>
-            <Text style={{width: '100%', lineHeight: 50, textAlign: 'center', justifyContent: 'center', color: COLORS.dark, ...FONTS.h1}}>
+            <Text style={{width: '100%', lineHeight: 40, textAlign: 'center', justifyContent: 'center', color: COLORS.lightGrey, ...FONTS.h1}}>
               Подключится к панели управления
             </Text>
 
@@ -144,7 +165,8 @@ const Auth = ({navigation}) => {
                 containerStyle={{
                   marginTop: SIZES.padding,
                   borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error
+                  backgroundColor: COLORS.error,
+                  color: COLORS.dark
                 }}
                 placeholder="IP"
                 value={ip}
@@ -164,9 +186,10 @@ const Auth = ({navigation}) => {
               {/* EMAIl */}
               <FormInput
                 containerStyle={{
-                  marginTop: SIZES.padding,
+                  marginTop: SIZES.radius,
                   borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error
+                  backgroundColor: COLORS.error,
+                  color: COLORS.dark
                 }}
                 placeholder="Логин"
                 value={email}
@@ -188,7 +211,8 @@ const Auth = ({navigation}) => {
                 containerStyle={{
                   marginTop: SIZES.radius,
                   borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error
+                  backgroundColor: COLORS.error,
+                  color: COLORS.dark
                 }}
                 placeholder="Пароль"
                 value={password}
@@ -224,22 +248,23 @@ const Auth = ({navigation}) => {
                 />
               </View>*/}
 
+              {/* LOG IN */}
+              <TextButton
+                label="Подключиться"
+                contentContainerStyle={{
+                  marginTop: SIZES.padding,
+                  height: 55,
+                  borderRadius: SIZES.radius,
+                  backgroundColor: COLORS.primary
+                }}
+                labelStyle={{...FONTS.h3}}
+                onPress={() => authHandler(email, password, ip)}
+              />
+
             </KeyboardAwareScrollView>
 
-            {/* LOG IN */}
-            <TextButton
-              label="Подключиться"
-              contentContainerStyle={{
-                height: 55,
-                borderRadius: SIZES.radius,
-                backgroundColor: COLORS.primary
-              }}
-              labelStyle={{...FONTS.h3}}
-              onPress={() => authHandler(email, password, ip)}
-            />
-
           </View>
-        </Shadow>
+
       </MotiView>
     )
   }

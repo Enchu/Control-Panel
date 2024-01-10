@@ -7,12 +7,14 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import { MotiView } from "moti";
 import { Shadow } from "react-native-shadow-2";
 import { RESP } from "../../hooks/userApi";
+import { useAuth } from "../../hooks/useAuth";
 
 const WalkthroughMainScreen = () => {
   const [network, setNetwork] = useState();
+  const {ipSetup} = useAuth()
 
   const renderPanel = async () => {
-    const pp = await RESP('http://10.0.2.2:5001/api/metrics/interfaces', 'GET')
+    const pp = await RESP(`http://${ipSetup}/api/metrics/interfaces`, 'GET')
     if(pp != null){
       setNetwork(pp)
     }

@@ -97,6 +97,7 @@ const WalkthroughMainScreen = () => {
         console.log('fileData:', JSON.stringify(fileData));
         console.log('filePath: ' + filePath)
         console.log('Document Directory Path:', RNFS.DocumentDirectoryPath);
+
         //await RNFS.writeFile(filePath, fileData, 'base64');
 
         setIconsSource(icons.success);

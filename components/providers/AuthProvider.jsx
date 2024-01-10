@@ -12,25 +12,19 @@ const AuthProvider = ({children}) => {
 
   const loginHandler = async (email, password, ip) => {
     setIsIsLoading(true);
+    setIpSetup(ip);
 
-    if(ip){
-      setIpSetup(ip);
-    }
-    /*else{
-      setIpSetup('10.0.2.2:5001')
-    }*/
     console.log(email)
     console.log(password)
+    console.log(ip)
 
     if(email.trim() !== '' && password.trim() !== ''){
-      const timeoutPromise = new Promise((resolve, reject) => {
-        setTimeout(() => {
-          reject(new Error('Request timeout'));
-        }, 5000);
-      });
+      console.log('прошле email и пароль')
 
       try {
-        const responsePromise = await fetch(`http://10.0.2.2:5001/api/table/auth`, {
+        console.log('прошле try')
+        Alert.alert('http',`http://${ip}/api/table/auth`)
+        const response = await fetch(`http://${ip}/api/table/auth`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -38,11 +32,11 @@ const AuthProvider = ({children}) => {
           body: JSON.stringify({ login: email.text, password: password.text }),
         });
 
-        const response = await Promise.race([responsePromise, timeoutPromise]);
+        console.log(response)
 
-        if (!response || response.status !== 200) {
+        /*if (!response || response.status !== 200) {
           throw new Error('Network response was not ok');
-        }
+        }*/
 
         const responseData = await response.json();
         const jwtToken = responseData.result.token;
@@ -53,6 +47,7 @@ const AuthProvider = ({children}) => {
         return jwtToken;
       }catch(e) {
         console.log('Error login', e.message);
+        Alert.alert('Ошибка: ', e.message);
         throw e;
       }finally {
         setIsIsLoading(false);
