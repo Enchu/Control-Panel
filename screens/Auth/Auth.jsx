@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -9,20 +9,27 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
-} from "react-native";
-import {COLORS, FONTS, SIZES} from "../../constants";
+} from 'react-native';
+import {COLORS, FONTS, SIZES} from '../../constants';
 import {MotiView, useAnimationState} from 'moti';
-import {Shadow} from "react-native-shadow-2";
-import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
-import icons from "../../constants/icons";
-import { CheckBox, CountryDropDown, FormInput, IconButton, ModalText, TextButton } from "../../components/module";
-import {useAuth} from "../../hooks/useAuth";
-import axios from "axios";
+import {Shadow} from 'react-native-shadow-2';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import icons from '../../constants/icons';
+import {
+  CheckBox,
+  CountryDropDown,
+  FormInput,
+  IconButton,
+  ModalText,
+  TextButton,
+} from '../../components/module';
+import {useAuth} from '../../hooks/useAuth';
+import axios from 'axios';
 
 const styles = StyleSheet.create({
   authContainer: {
     flex: 1,
-    width: SIZES.width - (SIZES.padding * 2),
+    width: SIZES.width - SIZES.padding * 2,
     padding: SIZES.padding,
     borderRadius: SIZES.radius,
   },
@@ -32,18 +39,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: SIZES.radius,
-    backgroundColor: COLORS.grey20
-  }
-})
+    backgroundColor: COLORS.grey20,
+  },
+});
 
 const Auth = ({navigation}) => {
-  const [mode, setMode] = useState("signIn");
+  const [mode, setMode] = useState('signIn');
   const [isVisible, setIsVisible] = useState(false);
 
   const [countries, setCountries] = useState([]);
   const [showCountryModal, setShowCountryModal] = useState(false);
 
-  const {login, register} = useAuth()
+  const {login, register} = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -56,17 +63,17 @@ const Auth = ({navigation}) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
 
   const authHandler = async (email, password, ip) => {
-    const jwt = await login(email, password, ip)
-    console.log("JWT: " + jwt);
-    navigation.navigate("Walkthrough")
+    const jwt = await login(email, password, ip);
+    console.log('JWT: ' + jwt);
+    navigation.navigate('Walkthrough');
 
-    if(jwt != null) {
-      console.log("Login successful")
-      navigation.navigate("Walkthrough")
-    }else{
+    if (jwt != null) {
+      console.log('Login successful');
+      navigation.navigate('Walkthrough');
+    } else {
       setShowErrorModal(true);
-      console.log("Login unsuccessful");
-      console.log(setShowErrorModal + ' ' + showErrorModal)
+      console.log('Login unsuccessful');
+      console.log(setShowErrorModal + ' ' + showErrorModal);
     }
 
     /*await axios.get('http://192.168.31.214:5001/api/metrics/state', {
@@ -81,28 +88,28 @@ const Auth = ({navigation}) => {
       console.log('Error login', error.message);
       Alert.alert('Ошибка', error.message);
     })*/
-  }
+  };
 
   const registerHandler = async (email, password) => {
-    register(email, password)
-  }
+    register(email, password);
+  };
 
   const animationState = useAnimationState({
-    signIn:{
+    signIn: {
       height: SIZES.height * 0.8,
     },
-    signUp:{
+    signUp: {
       height: SIZES.height * 0.7,
-    }
+    },
   });
 
   const renderAuthContainer = () => {
-    if(mode === "signIn"){
-      return renderSignIn()
-    }else{
-      return renderSignUp()
+    if (mode === 'signIn') {
+      return renderSignIn();
+    } else {
+      return renderSignUp();
     }
-  }
+  };
 
   useEffect(() => {
     animationState.transitionTo('signIn');
@@ -131,116 +138,123 @@ const Auth = ({navigation}) => {
           console.log('Error setting up the request:', error.message);
         }
       });*/
-  }, []);
+  });
 
   const renderSignIn = () => {
     return (
       <MotiView
         state={animationState}
-        style={{marginTop: SIZES.padding, height: SIZES.height}}
-      >
+        style={{marginTop: SIZES.padding, height: SIZES.height}}>
+        {showErrorModal && (
+          <ModalText
+            iconsSource={icons.unsuccessful}
+            placeholderSource="Ошибка подключения"
+            visibleSource={showErrorModal}
+          />
+        )}
+        <View style={styles.authContainer}>
+          <Text
+            style={{
+              width: '100%',
+              lineHeight: 40,
+              textAlign: 'center',
+              justifyContent: 'center',
+              color: COLORS.lightGrey,
+              ...FONTS.h1,
+            }}>
+            Подключится к панели управления
+          </Text>
 
-        {showErrorModal &&
-          (
-            <ModalText iconsSource={icons.unsuccessful} placeholderSource='Ошибка подключения' visibleSource={showErrorModal}/>
-          )
-        }
-          <View style={styles.authContainer}>
-            <Text style={{width: '100%', lineHeight: 40, textAlign: 'center', justifyContent: 'center', color: COLORS.lightGrey, ...FONTS.h1}}>
-              Подключится к панели управления
-            </Text>
-
-            <KeyboardAwareScrollView
-              enableOnAndroid={true}
-              keyboardDismissMode={"on-drag"}
-              keyboardShouldPersistTaps={"handled"}
-              extraScrollHeight={-300}
-              contextContainerStyle={{
-                flexGrow: 1,
-                justifyContent: 'center',
+          <KeyboardAwareScrollView
+            enableOnAndroid={true}
+            keyboardDismissMode={'on-drag'}
+            keyboardShouldPersistTaps={'handled'}
+            extraScrollHeight={-300}
+            contextContainerStyle={{
+              flexGrow: 1,
+              justifyContent: 'center',
+            }}>
+            {/* IP */}
+            <FormInput
+              containerStyle={{
+                marginTop: SIZES.padding,
+                borderRadius: SIZES.radius,
+                backgroundColor: COLORS.error,
+                color: COLORS.dark,
               }}
-            >
-              {/* IP */}
-              <FormInput
-                containerStyle={{
-                  marginTop: SIZES.padding,
-                  borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error,
-                  color: COLORS.dark
-                }}
-                placeholder="IP"
-                value={ip}
-                onChange={(text) => setIp(text)}
-                prependComponent={
-                  <Image
-                    source={icons.flash}
-                    style={{
-                      width: 25,
-                      height: 25,
-                      marginRight: SIZES.base
-                    }}
-                  />
-                }
-              />
+              placeholder="IP"
+              value={ip}
+              onChange={text => setIp(text)}
+              prependComponent={
+                <Image
+                  source={icons.flash}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    marginRight: SIZES.base,
+                  }}
+                />
+              }
+            />
 
-              {/* EMAIl */}
-              <FormInput
-                containerStyle={{
-                  marginTop: SIZES.radius,
-                  borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error,
-                  color: COLORS.dark
-                }}
-                placeholder="Логин"
-                value={email}
-                onChange={(text) => setEmail(text)}
-                prependComponent={
-                  <Image
-                    source={icons.email}
-                    style={{
-                      width: 25,
-                      height: 25,
-                      marginRight: SIZES.base
-                    }}
-                  />
-                }
-              />
+            {/* EMAIl */}
+            <FormInput
+              containerStyle={{
+                marginTop: SIZES.radius,
+                borderRadius: SIZES.radius,
+                backgroundColor: COLORS.error,
+                color: COLORS.dark,
+              }}
+              placeholder="Логин"
+              value={email}
+              onChange={text => setEmail(text)}
+              prependComponent={
+                <Image
+                  source={icons.email}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    marginRight: SIZES.base,
+                  }}
+                />
+              }
+            />
 
-              {/* PASSWORD */}
-              <FormInput
-                containerStyle={{
-                  marginTop: SIZES.radius,
-                  borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error,
-                  color: COLORS.dark
-                }}
-                placeholder="Пароль"
-                value={password}
-                secureTextEntry={!isVisible}
-                onChange={(text) => setPassword(text)}
-                prependComponent={
-                  <Image
-                    source={icons.lock}
-                    style={{
-                      width: 25,
-                      height: 25,
-                      marginRight: SIZES.base
-                    }}
-                  />
-                }
-                appendComponent={
-                  <IconButton
-                    icon={isVisible ? icons.eye_off : icons.eye}
-                    iconStyle={{
-                      tintColor: COLORS.grey
-                    }}
-                    onPress={() => setIsVisible(!isVisible)}
-                  />
-                }
-              />
+            {/* PASSWORD */}
+            <FormInput
+              containerStyle={{
+                marginTop: SIZES.radius,
+                borderRadius: SIZES.radius,
+                backgroundColor: COLORS.error,
+                color: COLORS.dark,
+              }}
+              placeholder="Пароль"
+              value={password}
+              secureTextEntry={!isVisible}
+              onChange={text => setPassword(text)}
+              prependComponent={
+                <Image
+                  source={icons.lock}
+                  style={{
+                    width: 25,
+                    height: 25,
+                    marginRight: SIZES.base,
+                  }}
+                />
+              }
+              appendComponent={
+                <IconButton
+                  icon={isVisible ? icons.eye_off : icons.eye}
+                  iconStyle={{
+                    tintColor: COLORS.grey,
+                  }}
+                  onPress={() => setIsVisible(!isVisible)}
+                />
+              }
+            />
 
-              {/* FORGOT */}
-              {/*<View style={{alignItems: 'flex-end'}}>
+            {/* FORGOT */}
+            {/*<View style={{alignItems: 'flex-end'}}>
                 <TextButton
                   label="Forgot Password"
                   contentContainerStyle={{marginTop: SIZES.radius, backgroundColor: null}}
@@ -248,33 +262,29 @@ const Auth = ({navigation}) => {
                 />
               </View>*/}
 
-              {/* LOG IN */}
-              <TextButton
-                label="Подключиться"
-                contentContainerStyle={{
-                  marginTop: SIZES.padding,
-                  height: 55,
-                  borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.primary
-                }}
-                labelStyle={{...FONTS.h3}}
-                onPress={() => authHandler(email, password, ip)}
-              />
-
-            </KeyboardAwareScrollView>
-
-          </View>
-
+            {/* LOG IN */}
+            <TextButton
+              label="Подключиться"
+              contentContainerStyle={{
+                marginTop: SIZES.padding,
+                height: 55,
+                borderRadius: SIZES.radius,
+                backgroundColor: COLORS.primary,
+              }}
+              labelStyle={{...FONTS.h3}}
+              onPress={() => authHandler(email, password, ip)}
+            />
+          </KeyboardAwareScrollView>
+        </View>
       </MotiView>
-    )
-  }
+    );
+  };
 
   const renderSignUp = () => {
     return (
       <MotiView
         state={animationState}
-        style={{marginTop: SIZES.padding, height: SIZES.height * 0.7}}
-      >
+        style={{marginTop: SIZES.padding, height: SIZES.height * 0.7}}>
         <Shadow>
           <View style={styles.authContainer}>
             <Text style={{width: '60%', lineHeight: 50, ...FONTS.h1}}>
@@ -283,32 +293,30 @@ const Auth = ({navigation}) => {
 
             <KeyboardAwareScrollView
               enableOnAndroid={true}
-              keyboardDismissMode={"on-drag"}
-              keyboardShouldPersistTaps={"handled"}
+              keyboardDismissMode={'on-drag'}
+              keyboardShouldPersistTaps={'handled'}
               extraScrollHeight={-300}
               contextContainerStyle={{
                 flexGrow: 1,
                 marginTop: SIZES.padding,
                 paddingBottom: SIZES.padding * 2,
-              }}
-            >
-
+              }}>
               {/* NAME */}
               <FormInput
                 containerStyle={{
                   borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error
+                  backgroundColor: COLORS.error,
                 }}
                 placeholder="Name"
                 value={name}
-                onChange={(text) => setName(text)}
+                onChange={text => setName(text)}
                 prependComponent={
                   <Image
                     source={icons.person}
                     style={{
                       width: 25,
                       height: 25,
-                      marginRight: SIZES.base
+                      marginRight: SIZES.base,
                     }}
                   />
                 }
@@ -319,18 +327,18 @@ const Auth = ({navigation}) => {
                 containerStyle={{
                   marginTop: SIZES.radius,
                   borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error
+                  backgroundColor: COLORS.error,
                 }}
                 placeholder="Email"
                 value={email}
-                onChange={(text) => setEmail(text)}
+                onChange={text => setEmail(text)}
                 prependComponent={
                   <Image
                     source={icons.person}
                     style={{
                       width: 25,
                       height: 25,
-                      marginRight: SIZES.base
+                      marginRight: SIZES.base,
                     }}
                   />
                 }
@@ -341,18 +349,18 @@ const Auth = ({navigation}) => {
                 containerStyle={{
                   marginTop: SIZES.radius,
                   borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error
+                  backgroundColor: COLORS.error,
                 }}
                 placeholder="Phone"
                 value={phone}
-                onChange={(text) => setPhone(text)}
+                onChange={text => setPhone(text)}
                 prependComponent={
                   <Image
                     source={icons.phone}
                     style={{
                       width: 25,
                       height: 25,
-                      marginRight: SIZES.base
+                      marginRight: SIZES.base,
                     }}
                   />
                 }
@@ -361,7 +369,7 @@ const Auth = ({navigation}) => {
               {/* COUNTRY */}
               <CountryDropDown
                 containerStyle={{
-                  marginTop: SIZES.radius
+                  marginTop: SIZES.radius,
                 }}
                 selectedCountry={selectedCountry}
                 onPress={() => setShowCountryModal(!showCountryModal)}
@@ -372,19 +380,19 @@ const Auth = ({navigation}) => {
                 containerStyle={{
                   marginTop: SIZES.radius,
                   borderRadius: SIZES.radius,
-                  backgroundColor: COLORS.error
+                  backgroundColor: COLORS.error,
                 }}
                 placeholder="Password"
                 value={password}
                 secureTextEntry={!isVisible}
-                onChange={(text) => setPassword(text)}
+                onChange={text => setPassword(text)}
                 prependComponent={
                   <Image
                     source={icons.lock}
                     style={{
                       width: 25,
                       height: 25,
-                      marginRight: SIZES.base
+                      marginRight: SIZES.base,
                     }}
                   />
                 }
@@ -392,7 +400,7 @@ const Auth = ({navigation}) => {
                   <IconButton
                     icon={isVisible ? icons.eye_off : icons.eye}
                     iconStyle={{
-                      tintColor: COLORS.grey
+                      tintColor: COLORS.grey,
                     }}
                     onPress={() => setIsVisible(!isVisible)}
                   />
@@ -402,7 +410,7 @@ const Auth = ({navigation}) => {
               {/*Terms and Conditions*/}
               <CheckBox
                 containerStyle={{
-                  marginTop: SIZES.radius
+                  marginTop: SIZES.radius,
                 }}
                 isSelected={termsChecked}
                 onPress={() => setTermsChecked(!termsChecked)}
@@ -410,72 +418,67 @@ const Auth = ({navigation}) => {
             </KeyboardAwareScrollView>
 
             <TextButton
-              label='Create Account'
+              label="Create Account"
               contentContainerStyle={{
                 height: 55,
                 borderRadius: SIZES.radius,
-                backgroundColor: COLORS.primary
+                backgroundColor: COLORS.primary,
               }}
               labelStyle={{...FONTS.h3}}
               onPress={() => registerHandler(email, password)}
             />
-
           </View>
         </Shadow>
       </MotiView>
-    )
-  }
+    );
+  };
 
   const renderCountryModal = () => {
     return (
       <Modal
         animationType="slide"
         transparent={true}
-        visible={showCountryModal}
-      >
+        visible={showCountryModal}>
         <TouchableWithoutFeedback onPress={() => setShowCountryModal(false)}>
           <View
             style={{
-              flex:1,
+              flex: 1,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: COLORS.dark80
-            }}
-          >
+              backgroundColor: COLORS.dark80,
+            }}>
             <View
               style={{
                 height: 400,
                 width: SIZES.width * 0.8,
                 backgroundColor: COLORS.light,
-                borderRadius: SIZES.radius
-              }}
-            >
+                borderRadius: SIZES.radius,
+              }}>
               <FlatList
                 data={countries}
-                KeyExtractor={(item) => item.code}
+                KeyExtractor={item => item.code}
                 contentContainerStyle={{
                   paddingHorizontal: SIZES.padding,
-                  paddingBottom: SIZES.padding
+                  paddingBottom: SIZES.padding,
                 }}
-                renderItem={({ item }) => {
+                renderItem={({item}) => {
                   return (
                     <TouchableOpacity
                       style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        marginTop: SIZES.radius
+                        marginTop: SIZES.radius,
                       }}
                       onPress={() => {
-                        setSelectedCountry(item)
-                        setShowCountryModal(false)
-                      }}
-                    >
+                        setSelectedCountry(item);
+                        setShowCountryModal(false);
+                      }}>
                       <Image
                         source={{uri: item.flag}}
                         resizeMode="contain"
                         style={{
-                          width:40,
-                          height:30
+                          width: 40,
+                          height: 30,
                         }}
                       />
                       <Text
@@ -484,21 +487,20 @@ const Auth = ({navigation}) => {
                           marginLeft: 10,
                           fontSize: 16,
                           fontWeight: 'bold',
-                          color: 'black'
-                        }}
-                      >
+                          color: 'black',
+                        }}>
                         {item.name}
                       </Text>
                     </TouchableOpacity>
-                  )
+                  );
                 }}
               />
             </View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-    )
-  }
+    );
+  };
 
   const renderAuthContainerFooter = () => {
     return (
@@ -508,47 +510,47 @@ const Auth = ({navigation}) => {
           height: 80,
           alignItems: 'flex-end',
           justifyContent: 'center',
-          marginTop:-30,
+          marginTop: -30,
           marginHorizontal: SIZES.radius,
           paddingBottom: SIZES.radius,
           borderBottomLeftRadius: SIZES.radius,
           borderBottomRightRadius: SIZES.radius,
           backgroundColor: COLORS.light60,
-          zIndex: 0
-        }}
-      >
+          zIndex: 0,
+        }}>
         <Text
           style={{
             color: COLORS.grey,
             ...FONTS.body5,
-          }}
-        >
-          {mode === "signIn" ? "Dont have an account" : "I already have an account?"}
+          }}>
+          {mode === 'signIn'
+            ? 'Dont have an account'
+            : 'I already have an account?'}
         </Text>
 
         <TextButton
-          label={mode === "signIn" ? "Create a new account" : "Sign in"}
+          label={mode === 'signIn' ? 'Create a new account' : 'Sign in'}
           contentContainerStyle={{
             marginLeft: SIZES.base,
             backgroundColor: null,
           }}
           labelStyle={{
             color: COLORS.support3,
-            ...FONTS.h5
+            ...FONTS.h5,
           }}
           onPress={() => {
-            if(animationState.current === 'signIn'){
-              animationState.transitionTo('signUp')
-              setMode("signUp")
-            }else {
-              animationState.transitionTo('signIn')
-              setMode("signIn")
+            if (animationState.current === 'signIn') {
+              animationState.transitionTo('signUp');
+              setMode('signUp');
+            } else {
+              animationState.transitionTo('signIn');
+              setMode('signIn');
             }
           }}
         />
       </View>
-    )
-  }
+    );
+  };
 
   const renderSocialLogins = () => {
     return (
@@ -558,29 +560,26 @@ const Auth = ({navigation}) => {
           alignItems: 'center',
           justifyContent: 'center',
           marginTop: -30,
-          zIndex: -1
-        }}
-      >
+          zIndex: -1,
+        }}>
         <Text
           style={{
             color: COLORS.dark,
             ...FONTS.body3,
-          }}
-        >
+          }}>
           Or login Witch
         </Text>
 
         <View
           style={{
             flexDirection: 'row',
-            marginTop: SIZES.radius
-          }}
-        >
+            marginTop: SIZES.radius,
+          }}>
           {/* Twitter */}
           <IconButton
             icon={icons.twitter}
             iconStyle={{
-              tintColor: COLORS.primary
+              tintColor: COLORS.primary,
             }}
             containerStyle={styles.socialButtonContainer}
           />
@@ -589,30 +588,40 @@ const Auth = ({navigation}) => {
           <IconButton
             icon={icons.google}
             iconStyle={{
-              tintColor: COLORS.primary
+              tintColor: COLORS.primary,
             }}
-            containerStyle={{...styles.socialButtonContainer, marginLeft: SIZES.radius}}
+            containerStyle={{
+              ...styles.socialButtonContainer,
+              marginLeft: SIZES.radius,
+            }}
           />
 
           {/* Google */}
           <IconButton
             icon={icons.linkedin}
             iconStyle={{
-              tintColor: COLORS.primary
+              tintColor: COLORS.primary,
             }}
-            containerStyle={{...styles.socialButtonContainer, marginLeft: SIZES.radius}}
+            containerStyle={{
+              ...styles.socialButtonContainer,
+              marginLeft: SIZES.radius,
+            }}
           />
-
         </View>
       </View>
-    )
-  }
+    );
+  };
 
   return (
-    <View style={{ flex: 1, paddingHorizontal: SIZES.padding, backgroundColor: COLORS.dark, justifyContent: 'center', alignItems: 'center'}}>
-      <View style={{zIndex: 1}}>
-        {renderAuthContainer()}
-      </View>
+    <View
+      style={{
+        flex: 1,
+        paddingHorizontal: SIZES.padding,
+        backgroundColor: COLORS.dark,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <View style={{zIndex: 1}}>{renderAuthContainer()}</View>
 
       {/*{renderAuthContainerFooter()}*/}
 

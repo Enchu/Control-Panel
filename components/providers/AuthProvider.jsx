@@ -1,12 +1,12 @@
 import React, {createContext, useEffect, useMemo, useState} from 'react';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {Alert} from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Alert} from 'react-native';
 
 export const AuthContext = createContext({});
 
 const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
-  const [isLoadingInitial ,setIsLoadingInitial] = useState(true);
+  const [isLoadingInitial, setIsLoadingInitial] = useState(true);
   const [isLoading, setIsIsLoading] = useState(true);
   const [ipSetup, setIpSetup] = useState('');
 
@@ -14,25 +14,25 @@ const AuthProvider = ({children}) => {
     setIsIsLoading(true);
     setIpSetup(ip);
 
-    console.log(email)
-    console.log(password)
-    console.log(ip)
+    console.log(email);
+    console.log(password);
+    console.log(ip);
 
-    if(email.trim() !== '' && password.trim() !== ''){
-      console.log('прошле email и пароль')
+    if (email.trim() !== '' && password.trim() !== '') {
+      console.log('прошле email и пароль');
 
       try {
-        console.log('прошле try')
-        Alert.alert('http',`http://${ip}/api/table/auth`)
+        console.log('прошле try');
+        //Alert.alert('http', `http://${ip}/api/table/auth`);
         const response = await fetch(`http://${ip}/api/table/auth`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ login: email.text, password: password.text }),
+          body: JSON.stringify({login: email.text, password: password.text}),
         });
 
-        console.log(response)
+        console.log(response);
 
         /*if (!response || response.status !== 200) {
           throw new Error('Network response was not ok');
@@ -45,55 +45,64 @@ const AuthProvider = ({children}) => {
         setUser(jwtToken);
 
         return jwtToken;
-      }catch(e) {
+      } catch (e) {
         console.log('Error login', e.message);
         Alert.alert('Ошибка: ', e.message);
         throw e;
-      }finally {
+      } finally {
         setIsIsLoading(false);
       }
-    }else{
+    } else {
       return null;
     }
-  }
+  };
 
   const registerHandler = async (email, password) => {
     setIsIsLoading(true);
 
-    if(email != null && password != null){
+    if (email != null && password != null) {
       try {
         /*await register(email, password)*/
-      }catch(e) {
+      } catch (e) {
         Alert.alert('Error register', e.message);
-      }finally {
+      } finally {
         setIsIsLoading(false);
       }
     }
-  }
+  };
 
-  const logOutHandler = () =>{
+  const logOutHandler = () => {
     try {
       setUser(null);
-    }catch(e) {
+    } catch (e) {
       Alert.alert('Error login', e.message);
-    }finally {
+    } finally {
       setIsIsLoading(false);
     }
-  }
+  };
 
-  const value = useMemo(() => ({
-    user, login: loginHandler, logout: logOutHandler, register: registerHandler(), isLoadingInitial, isLoading, ipSetup
-  }), [user, isLoading]);
+  const value = useMemo(
+    () => ({
+      user,
+      login: loginHandler,
+      logout: logOutHandler,
+      register: registerHandler(),
+      isLoadingInitial,
+      isLoading,
+      ipSetup,
+    }),
+    [user, isLoading],
+  );
 
   useEffect(() => {
-    setUser(null)
-    setIsLoadingInitial(false)
+    setUser(null);
+    setIsLoadingInitial(false);
   }, []);
 
   return (
     <AuthContext.Provider value={value}>
       {!isLoadingInitial && children}
-    </AuthContext.Provider >
+    </AuthContext.Provider>
   );
 };
 
