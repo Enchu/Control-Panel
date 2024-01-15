@@ -60,7 +60,7 @@ const Metrics = () => {
           justifyContent: 'flex-start',
         }}
       >
-        <Text style={{...FONTS.h1, color: COLORS.lightGrey}}>Метрики</Text>
+        <Text style={{paddingTop: SIZES.radius,...FONTS.h1, color: COLORS.lightGrey}}>Метрики</Text>
       </View>
 
       <MotiView

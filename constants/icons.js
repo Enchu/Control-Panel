@@ -45,7 +45,7 @@ const document = require('../assets/icons/document.png')
 const pour = require('../assets/icons/fileSet.png')
 const play = require('../assets/icons/play.png')
 const update = require('../assets/icons/changes.png')
-
+const eyeblack = require('../assets/icons/eyeblack.png')
 
 export default {
     arrow_down_fill,
@@ -95,4 +95,5 @@ export default {
     pour,
     play,
     update,
+    eyeblack
 }

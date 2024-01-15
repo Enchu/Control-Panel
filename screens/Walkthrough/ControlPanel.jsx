@@ -34,7 +34,7 @@ const WalkthroughMainScreen = () => {
           justifyContent: 'flex-start',
         }}
       >
-        <Text style={{...FONTS.h1, color: COLORS.lightGrey}}>Сетевые интерфейсы</Text>
+        <Text style={{paddingTop: SIZES.radius,...FONTS.h1, color: COLORS.lightGrey}}>Сетевые интерфейсы</Text>
       </View>
 
 
@@ -45,7 +45,6 @@ const WalkthroughMainScreen = () => {
           alignItems: 'center',
         }}
       >
-        <Shadow>
           <View style={{
             width: SIZES.width - SIZES.base,
             padding: SIZES.base,
@@ -114,9 +113,7 @@ const WalkthroughMainScreen = () => {
               }
             />*/}
 
-
           </View>
-        </Shadow>
       </MotiView>
 
     </View>

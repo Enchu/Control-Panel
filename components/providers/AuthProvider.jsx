@@ -1,6 +1,7 @@
 import React, {createContext, useEffect, useMemo, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Alert} from 'react-native';
+import axios from "axios";
 
 export const AuthContext = createContext({});
 
@@ -23,13 +24,14 @@ const AuthProvider = ({children}) => {
 
       try {
         console.log('прошле try');
-        //Alert.alert('http', `http://${ip}/api/table/auth`);
-        const response = await fetch(`http://${ip}/api/table/auth`, {
-          method: 'POST',
+        //Alert.alert(`http://${ip}/api/table/auth`)
+        const response = await axios.post(`http://${ip}/api/table/auth`, {
+          login: email.text,
+          password: password.text
+        }, {
           headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({login: email.text, password: password.text}),
+          }
         });
 
         console.log(response);
@@ -38,7 +40,7 @@ const AuthProvider = ({children}) => {
           throw new Error('Network response was not ok');
         }*/
 
-        const responseData = await response.json();
+        const responseData = await response.data;
         const jwtToken = responseData.result.token;
 
         await AsyncStorage.setItem('jwtToken', jwtToken);
@@ -47,7 +49,6 @@ const AuthProvider = ({children}) => {
         return jwtToken;
       } catch (e) {
         console.log('Error login', e.message);
-        Alert.alert('Ошибка: ', e.message);
         throw e;
       } finally {
         setIsIsLoading(false);

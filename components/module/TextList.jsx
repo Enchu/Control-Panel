@@ -39,15 +39,17 @@ const TextList = ({ containerStyle,
             {placeholderL}
           </Text>
 
-          <Text
-            style={{
-              color: COLORS.lightGrey,
-              ...FONTS.h2,
-              ...inputStyleR
-            }}
-          >
-            {placeholderR}
-          </Text>
+          <View style={{ flex: 1 }}>
+            <Text
+              style={{
+                color: COLORS.lightGrey,
+                ...FONTS.h2,
+                ...inputStyleR
+              }}
+            >
+              {placeholderR}
+            </Text>
+          </View>
 
           {appendComponent}
         </View>

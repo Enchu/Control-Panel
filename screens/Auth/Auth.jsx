@@ -27,12 +27,6 @@ import {useAuth} from '../../hooks/useAuth';
 import axios from 'axios';
 
 const styles = StyleSheet.create({
-  authContainer: {
-    flex: 1,
-    width: SIZES.width - SIZES.padding * 2,
-    padding: SIZES.padding,
-    borderRadius: SIZES.radius,
-  },
   socialButtonContainer: {
     width: 55,
     height: 55,
@@ -63,9 +57,9 @@ const Auth = ({navigation}) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
 
   const authHandler = async (email, password, ip) => {
+    setShowErrorModal(false);
+
     const jwt = await login(email, password, ip);
-    console.log('JWT: ' + jwt);
-    navigation.navigate('Walkthrough');
 
     if (jwt != null) {
       console.log('Login successful');
@@ -75,19 +69,6 @@ const Auth = ({navigation}) => {
       console.log('Login unsuccessful');
       console.log(setShowErrorModal + ' ' + showErrorModal);
     }
-
-    /*await axios.get('http://192.168.31.214:5001/api/metrics/state', {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      timeout: 10000
-    }).then(response => {
-      Alert.alert('response','ПРОШЛО')
-      navigation.navigate("Walkthrough")
-    }).catch(error => {
-      console.log('Error login', error.message);
-      Alert.alert('Ошибка', error.message);
-    })*/
   };
 
   const registerHandler = async (email, password) => {
@@ -144,7 +125,11 @@ const Auth = ({navigation}) => {
     return (
       <MotiView
         state={animationState}
-        style={{marginTop: SIZES.padding, height: SIZES.height}}>
+        style=
+          {{
+            marginTop: SIZES.padding,
+            height: SIZES.height,
+          }}>
         {showErrorModal && (
           <ModalText
             iconsSource={icons.unsuccessful}
@@ -152,7 +137,14 @@ const Auth = ({navigation}) => {
             visibleSource={showErrorModal}
           />
         )}
-        <View style={styles.authContainer}>
+        <View
+          style={{
+            flex: 1,
+            width: SIZES.width - SIZES.padding * 2,
+            padding: SIZES.padding,
+            borderRadius: SIZES.radius,
+          }}
+        >
           <Text
             style={{
               width: '100%',
@@ -616,12 +608,18 @@ const Auth = ({navigation}) => {
     <View
       style={{
         flex: 1,
+        paddingTop: SIZES.padding,
         paddingHorizontal: SIZES.padding,
         backgroundColor: COLORS.dark,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: 'center'
       }}>
-      <View style={{zIndex: 1}}>{renderAuthContainer()}</View>
+      <View
+        style={{
+          zIndex: 1
+        }}
+      >
+        {renderAuthContainer()}
+      </View>
 
       {/*{renderAuthContainerFooter()}*/}
 
