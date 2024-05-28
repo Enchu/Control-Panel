@@ -14,17 +14,8 @@ const AuthProvider = ({children}) => {
   const loginHandler = async (email, password, ip) => {
     setIsIsLoading(true);
     setIpSetup(ip);
-
-    console.log(email);
-    console.log(password);
-    console.log(ip);
-
     if (email.trim() !== '' && password.trim() !== '') {
-      console.log('прошле email и пароль');
-
       try {
-        console.log('прошле try');
-        //Alert.alert(`http://${ip}/api/table/auth`)
         const response = await axios.post(`http://${ip}/api/table/auth`, {
           login: email.text,
           password: password.text
